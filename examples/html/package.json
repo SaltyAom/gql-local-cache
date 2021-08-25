@@ -1,0 +1,17 @@
+{
+  "name": "html",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@saltyaom/gql": "^1.1.1",
+    "@saltyaom/gql-local-cache": "../.."
+  },
+  "devDependencies": {
+    "typescript": "^4.3.2",
+    "vite": "^2.4.4"
+  }
+}
