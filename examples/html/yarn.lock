@@ -3,12 +3,12 @@
 
 
 "@saltyaom/gql-local-cache@../..":
-  version "1.0.0"
+  version "1.0.1"
 
-"@saltyaom/gql@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@saltyaom/gql/-/gql-1.1.1.tgz#dbee1ea6488e29eca0831ee6326d2d6b129ab55b"
-  integrity sha512-cMZGi7A5lzHrGknI9r4rPmj2A7ETI/x5pKAx5vkcs4HA1ciRlyQf7Up5qzV0D850e3LssiQFc0eEDOnKTDS40w==
+"@saltyaom/gql@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@saltyaom/gql/-/gql-1.1.2.tgz#d31765dbaff6569d6ed077917742c0e7786da910"
+  integrity sha512-iqV71OIsqk6hzIZsAQOyWJqf1QcElysHspm0N0t4uhh7VF/8ycRWFN0SNUBQB7vARl6+XRy86GaOVG66f5Jfkg==
   dependencies:
     isomorphic-unfetch "^3.1.0"
 

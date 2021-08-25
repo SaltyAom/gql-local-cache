@@ -8,8 +8,9 @@ import localCache from '@saltyaom/gql-local-cache'
 
 client.config(
   'https://api.opener.studio/graphql', 
-  undefined, 
-  [localCache()]
+  {
+    plugins: [localCache()]
+  }
 )
 
 gql(

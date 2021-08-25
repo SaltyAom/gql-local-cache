@@ -7,7 +7,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@saltyaom/gql": "^1.1.1",
+    "@saltyaom/gql": "^1.1.2",
     "@saltyaom/gql-local-cache": "../.."
   },
   "devDependencies": {

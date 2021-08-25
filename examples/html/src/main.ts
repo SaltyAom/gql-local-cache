@@ -1,7 +1,9 @@
 import gql, { client } from '@saltyaom/gql'
 import localCache from '@saltyaom/gql-local-cache'
 
-client.config('https://api.opener.studio/graphql', undefined, [localCache()])
+client.config('https://api.opener.studio/graphql', {
+  plugins: [localCache()]
+})
 
 gql(
   `query GetHentaiById($id: Int!) {
@@ -16,10 +18,10 @@ gql(
     }
   }
 `,
-	{
-		variables: {
-			id: 177013
-		}
+  {
+    variables: {
+      id: 177013
+    }
 	}
 ).then((data) => {
 	console.log(data)
