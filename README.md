@@ -13,23 +13,23 @@ client.config(
 )
 
 gql(
-	`query GetHentaiById($id: Int!) {
-      getHentaiById(id: $id) {
-        success
-        data {
-          title {
-            display
-			      japanese
-          }
+  `query GetHentaiById($id: Int!) {
+    getHentaiById(id: $id) {
+      success
+      data {
+        title {
+          display
+          japanese
         }
       }
     }
+  }
   `,
-	{
-		variables: {
-			id: 177013
-		}
-	}
+  {
+    variables: {
+      id: 177013
+    }
+  }
 ).then((data) => {
   console.log(data)
 })
