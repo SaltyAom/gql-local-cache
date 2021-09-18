@@ -14,6 +14,12 @@ gql(
           display
           japanese
         }
+        metadata {
+          tags {
+            name
+            count
+          }
+        }
       }
     }
   }
