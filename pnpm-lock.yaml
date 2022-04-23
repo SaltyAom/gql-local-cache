@@ -1,0 +1,84 @@
+lockfileVersion: 5.3
+
+specifiers:
+  '@saltyaom/gql': ^1.1.1
+  esbuild: ^0.12.18
+  typescript: ^4.3.5
+
+devDependencies:
+  '@saltyaom/gql': 1.1.13
+  esbuild: 0.12.29
+  typescript: 4.6.3
+
+packages:
+
+  /@saltyaom/gql-inmemory-cache/1.1.0_@saltyaom+gql@1.1.13:
+    resolution: {integrity: sha512-QEEqZ73zg5vr5OwCuhuhr3zZ0RCatiBn6+EPmXWDJPAwUZWgCvEWqPuRx/6lc6wou/Gry4hLrXFAL4lwJuvYcA==}
+    peerDependencies:
+      '@saltyaom/gql': '>= 1.1.1'
+    dependencies:
+      '@saltyaom/gql': 1.1.13
+    dev: true
+
+  /@saltyaom/gql/1.1.13:
+    resolution: {integrity: sha512-UMzP2r9lliiWUrhl9S6qRED/4Re/Y0Ymu03ckNtXKeRJ7ZnFFlnRLwTxYpMJN1QiqYdqXsbnDVgOp4LmTTaYAQ==}
+    peerDependencies:
+      graphql: '>=15.0.0'
+    dependencies:
+      '@saltyaom/gql-inmemory-cache': 1.1.0_@saltyaom+gql@1.1.13
+      isomorphic-unfetch: 3.1.0
+    transitivePeerDependencies:
+      - encoding
+    dev: true
+
+  /esbuild/0.12.29:
+    resolution: {integrity: sha512-w/XuoBCSwepyiZtIRsKsetiLDUVGPVw1E/R3VTFSecIy8UR7Cq3SOtwKHJMFoVqqVG36aGkzh4e8BvpO1Fdc7g==}
+    hasBin: true
+    requiresBuild: true
+    dev: true
+
+  /isomorphic-unfetch/3.1.0:
+    resolution: {integrity: sha512-geDJjpoZ8N0kWexiwkX8F9NkTsXhetLPVbZFQ+JTW239QNOwvB0gniuR1Wc6f0AMTn7/mFGyXvHTifrCp/GH8Q==}
+    dependencies:
+      node-fetch: 2.6.7
+      unfetch: 4.2.0
+    transitivePeerDependencies:
+      - encoding
+    dev: true
+
+  /node-fetch/2.6.7:
+    resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+    dev: true
+
+  /tr46/0.0.3:
+    resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
+    dev: true
+
+  /typescript/4.6.3:
+    resolution: {integrity: sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
+
+  /unfetch/4.2.0:
+    resolution: {integrity: sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==}
+    dev: true
+
+  /webidl-conversions/3.0.1:
+    resolution: {integrity: sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=}
+    dev: true
+
+  /whatwg-url/5.0.0:
+    resolution: {integrity: sha1-lmRU6HZUYuN2RNNib2dCzotwll0=}
+    dependencies:
+      tr46: 0.0.3
+      webidl-conversions: 3.0.1
+    dev: true

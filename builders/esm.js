@@ -3,10 +3,13 @@ require('esbuild')
 		entryPoints: ['./src/index.ts'],
 		outdir: './build/esm',
 		format: 'esm',
+		outExtension: {
+			'.js': '.mjs'
+		},
 		bundle: true,
-		minify: false,
+		minify: true,
 		sourcemap: 'external',
-		keepNames: true,
+		keepNames: false,
 		external: ['isomorphic-unfetch'],
 		target: ['es2019']
 	})
