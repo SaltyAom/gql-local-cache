@@ -56,13 +56,13 @@ type Pending = [Promise<Object>, Resolver]
 
 const pendings: Record<string, Pending> = {}
 
-const createPending = (): Pending => {
+const createPending = (key: string) => {
 	let resolver: Resolver = () => {}
 	const pending = new Promise<Object>((resolve) => {
 		resolver = resolve
 	})
 
-	return [pending, resolver]
+	pendings[key] = [pending, resolver]
 }
 
 /**
@@ -90,7 +90,7 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 			if (pending) return await pending[0]
 
 			if (Date.now() > +expires) {
-				pendings[key] = createPending()
+				createPending(key)
 
 				removeItem(key)
 				removeItem(expiresKey)
@@ -105,7 +105,7 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 
 			if (persisted) return JSON.parse(persisted)
 
-			pendings[key] = createPending()
+			createPending(key)
 		}
 	],
 	afterwares: [
