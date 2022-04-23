@@ -22,7 +22,7 @@ export const invalidateCaches = async () => {
 		if (!k.startsWith('_gqc_') || !k.endsWith('d') || Number.isNaN(expires))
 			return
 
-		if (Date.now() <= expires) {
+		if (Date.now() > expires) {
 			removeItem(k)
 			removeItem(k.slice(0, -1))
 		}
