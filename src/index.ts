@@ -51,31 +51,50 @@ const tsh = (s: string) => {
 
 const { stringify: str } = JSON
 
+type Resolver = (v: Object | PromiseLike<Object>) => void
+type Pending = [Promise<Object>, Resolver]
+
+const pendings: Record<string, Pending> = {}
+
+const createPending = (): Pending => {
+	let resolver: Resolver = () => {}
+	const pending = new Promise<Object>((resolve) => {
+		resolver = resolve
+	})
+
+	return [pending, resolver]
+}
+
 /**
  * gql local cache plugins
  *
  * @example
  * ```typescript
- * import localCache from '@saltyaom/gql-local-cache'
+ * import LocalCache from '@saltyaom/gql-local-cache'
  *
  * client.config('/graphql', {
- *   plugins: [localCache()]
+ *   plugins: [LocalCache()]
  * })
  * ```
  */
 const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 	middlewares: [
-		({ operationName, variables, query }) => {
+		async ({ operationName, variables, query }) => {
 			if (isServer) return null
 
 			let key = tsh(plugin + operationName + str(variables) + query)
 			let expiresKey = key + dateTag
-
 			let expires = getItem(expiresKey) || 0
 
+			let pending = pendings[key]
+			if (pending) return await pending[0]
+
 			if (Date.now() > +expires) {
+				pendings[key] = createPending()
+
 				removeItem(key)
 				removeItem(expiresKey)
+
 				invalidateCaches()
 
 				return null
@@ -85,6 +104,8 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 			invalidateCaches()
 
 			if (persisted) return JSON.parse(persisted)
+
+			pendings[key] = createPending()
 		}
 	],
 	afterwares: [
@@ -92,11 +113,16 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 			if (isServer || !data) return null
 
 			let key = tsh(plugin + operationName + str(variables) + query)
-
 			let expiresKey = key + dateTag
 
 			setItem(expiresKey, Date.now() + ttl * 1000 + '')
 			setItem(key, str(data))
+
+			let pending = pendings[key]
+			if (pending) {
+				pending[1](data)
+				delete pendings[key]
+			}
 		}
 	]
 })
