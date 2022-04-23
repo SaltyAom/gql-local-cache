@@ -9,6 +9,28 @@ const getItem = (k: string) => localStorage.getItem(k)
 const setItem = (k: string, v: string) => localStorage.setItem(k, v)
 const removeItem = (k: string) => localStorage.removeItem(k)
 
+let invalidatingCache = false
+
+// Making run behind after scope end by marking it as async
+export const invalidateCaches = async () => {
+	if (isServer || invalidateCaches) return
+
+	invalidatingCache = true
+
+	Object.entries(localStorage).forEach(([k, v]) => {
+		const expires = +v
+		if (!k.startsWith('_gqc_') || !k.endsWith('d') || Number.isNaN(expires))
+			return
+
+		if (Date.now() <= expires) {
+			removeItem(k)
+			removeItem(k.slice(0, -1))
+		}
+	})
+
+	invalidatingCache = false
+}
+
 interface GqlLocalCacheConfig {
 	/**
 	 * Time to Live
@@ -31,11 +53,11 @@ const { stringify: str } = JSON
 
 /**
  * gql local cache plugins
- * 
+ *
  * @example
  * ```typescript
  * import localCache from '@saltyaom/gql-local-cache'
- * 
+ *
  * client.config('/graphql', {
  *   plugins: [localCache()]
  * })
@@ -46,9 +68,7 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 		({ operationName, variables, query }) => {
 			if (isServer) return null
 
-			let key = tsh(
-				plugin + operationName + str(variables) + query
-			)
+			let key = tsh(plugin + operationName + str(variables) + query)
 			let expiresKey = key + dateTag
 
 			let expires = getItem(expiresKey) || 0
@@ -56,11 +76,14 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 			if (Date.now() > +expires) {
 				removeItem(key)
 				removeItem(expiresKey)
+				invalidateCaches()
 
 				return null
 			}
 
 			let persisted = getItem(key)
+			invalidateCaches()
+
 			if (persisted) return JSON.parse(persisted)
 		}
 	],
@@ -68,13 +91,11 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 		({ data, operationName, variables, query }) => {
 			if (isServer || !data) return null
 
-			let key = tsh(
-				plugin + operationName + str(variables) + query
-			)
+			let key = tsh(plugin + operationName + str(variables) + query)
 
 			let expiresKey = key + dateTag
 
-			setItem(expiresKey, (Date.now() + ttl * 1000) + '')
+			setItem(expiresKey, Date.now() + ttl * 1000 + '')
 			setItem(key, str(data))
 		}
 	]
