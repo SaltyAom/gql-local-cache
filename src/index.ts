@@ -80,7 +80,7 @@ const createPending = (key: string) => {
 const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 	middlewares: [
 		async ({ operationName, variables, query }) => {
-			if (isServer) return null
+			if (isServer) return
 
 			let key = tsh(plugin + operationName + str(variables) + query)
 			let expiresKey = key + dateTag
@@ -97,7 +97,7 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 
 				invalidateCaches()
 
-				return null
+				return
 			}
 
 			let persisted = getItem(key)
@@ -110,19 +110,21 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 	],
 	afterwares: [
 		({ data, operationName, variables, query }) => {
-			if (isServer || !data) return null
+			if (isServer) return
 
 			let key = tsh(plugin + operationName + str(variables) + query)
 			let expiresKey = key + dateTag
-
-			setItem(expiresKey, Date.now() + ttl * 1000 + '')
-			setItem(key, str(data))
 
 			let pending = pendings[key]
 			if (pending) {
 				pending[1](data)
 				delete pendings[key]
 			}
+
+			if (!data) return
+
+			setItem(expiresKey, Date.now() + ttl * 1000 + '')
+			setItem(key, str(data))
 		}
 	]
 })
