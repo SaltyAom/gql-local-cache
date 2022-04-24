@@ -2,7 +2,6 @@ import type { Plugin } from '@saltyaom/gql'
 
 const isServer = typeof window === 'undefined'
 
-const plugin = '_gqc_'
 const dateTag = 'd'
 
 const getItem = (k: string) => localStorage.getItem(k)
@@ -46,7 +45,7 @@ const tsh = (s: string) => {
 	for (var i = 0, h = 9; i < s.length; )
 		h = Math.imul(h ^ s.charCodeAt(i++), 9 ** 9)
 
-	return plugin + (h ^ (h >>> 9))
+	return '_gqc_' + (h ^ (h >>> 9))
 }
 
 const { stringify: str } = JSON
@@ -82,9 +81,11 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 		async ({ operationName, variables, query }) => {
 			if (isServer) return
 
-			let key = tsh(plugin + operationName + str(variables) + query)
+			let key = tsh(str(variables) + query)
 			let expiresKey = key + dateTag
 			let expires = getItem(expiresKey) || 0
+
+			console.log('[local cache] Middle:', key, { ...pendings })
 
 			let pending = pendings[key]
 			if (pending) return await pending[0]
@@ -112,13 +113,15 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 		({ data, operationName, variables, query }) => {
 			if (isServer) return
 
-			let key = tsh(plugin + operationName + str(variables) + query)
+			let key = tsh(str(variables) + query)
 			let expiresKey = key + dateTag
+
+			console.log('[local cache] Afterware:', key, { ...pendings })
 
 			let pending = pendings[key]
 			if (pending) {
-				pending[1](data)
 				delete pendings[key]
+				pending[1](data)
 			}
 
 			if (!data) return
