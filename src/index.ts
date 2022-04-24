@@ -50,14 +50,14 @@ const tsh = (s: string) => {
 
 const { stringify: str } = JSON
 
-type Resolver = (v: Object | PromiseLike<Object>) => void
-type Pending = [Promise<Object>, Resolver]
+type Resolver = (v: Object | null) => void
+type Pending = [Promise<Object | null>, Resolver]
 
 const pendings: Record<string, Pending> = {}
 
 const createPending = (key: string) => {
 	let resolver: Resolver = () => {}
-	const pending = new Promise<Object>((resolve) => {
+	const pending = new Promise<Object | null>((resolve) => {
 		resolver = resolve
 	})
 
@@ -85,10 +85,11 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 			let expiresKey = key + dateTag
 			let expires = getItem(expiresKey) || 0
 
-			console.log('[local cache] Middle:', key, { ...pendings })
-
 			let pending = pendings[key]
-			if (pending) return await pending[0]
+			if (pending) {
+				const cache = await pending[0]
+				if (cache) return cache
+			}
 
 			if (Date.now() > +expires) {
 				createPending(key)
@@ -110,13 +111,11 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 		}
 	],
 	afterwares: [
-		({ data, operationName, variables, query }) => {
+		({ data, operationName, variables, query, fromCache }) => {
 			if (isServer) return
 
 			let key = tsh(str(variables) + query)
 			let expiresKey = key + dateTag
-
-			console.log('[local cache] Afterware:', key, { ...pendings })
 
 			let pending = pendings[key]
 			if (pending) {
@@ -124,7 +123,7 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 				pending[1](data)
 			}
 
-			if (!data) return
+			if (!data || fromCache) return
 
 			setItem(expiresKey, Date.now() + ttl * 1000 + '')
 			setItem(key, str(data))
