@@ -1,19 +1,19 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@saltyaom/gql': ^1.2.1
+  '@saltyaom/gql': ^1.3.0
   esbuild: ^0.12.18
   typescript: ^4.3.5
 
 devDependencies:
-  '@saltyaom/gql': 1.2.1
+  '@saltyaom/gql': 1.3.0
   esbuild: 0.12.29
   typescript: 4.6.3
 
 packages:
 
-  /@saltyaom/gql/1.2.1:
-    resolution: {integrity: sha512-4+20hZMK5G3k3K9sX1D83P6u3OBW1jb2Xi2jQ04QoxJh/ORL5Nis7Q9r2FBYI2QgVQrfKekaagXlQSa5zIPxIA==}
+  /@saltyaom/gql/1.3.0:
+    resolution: {integrity: sha512-Nb7cM7g7oUennWN3CuZNV5uAwB5YLQKBeY8q+B9C+lcGfhPkqc/jTwmyNfmIfNfOOUIEEif0JJwviX8zZwWvFw==}
     peerDependencies:
       graphql: '>=15.0.0'
     dependencies:

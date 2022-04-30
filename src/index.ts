@@ -2,6 +2,7 @@ import type { Plugin } from '@saltyaom/gql'
 
 const isServer = typeof window === 'undefined'
 
+const prefix = '_gqc_'
 const dateTag = 'd'
 
 const getItem = (k: string) => localStorage.getItem(k)
@@ -55,7 +56,7 @@ type Pending = [Promise<Object | null>, Resolver]
 
 const pendings: Record<string, Pending> = {}
 
-const createPending = (key: string) => {
+const createPending = (key: number) => {
 	let resolver: Resolver = () => {}
 	const pending = new Promise<Object | null>((resolve) => {
 		resolver = resolve
@@ -78,23 +79,22 @@ const createPending = (key: string) => {
  */
 const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 	middlewares: [
-		async ({ operationName, variables, query }) => {
+		async ({ hash, variables, query }) => {
 			if (isServer) return
 
-			let key = tsh(str(variables) + query)
-			let expiresKey = key + dateTag
+			let expiresKey = hash + dateTag
 			let expires = getItem(expiresKey) || 0
 
-			let pending = pendings[key]
+			let pending = pendings[hash]
 			if (pending) {
 				const cache = await pending[0]
 				if (cache) return cache
 			}
 
 			if (Date.now() > +expires) {
-				createPending(key)
+				createPending(hash)
 
-				removeItem(key)
+				removeItem(prefix + hash)
 				removeItem(expiresKey)
 
 				invalidateCaches()
@@ -102,31 +102,30 @@ const gqlLocalCache = ({ ttl = 86400 }: GqlLocalCacheConfig = {}): Plugin => ({
 				return
 			}
 
-			let persisted = getItem(key)
+			let persisted = getItem(prefix + hash)
 			invalidateCaches()
 
 			if (persisted) return JSON.parse(persisted)
 
-			createPending(key)
+			createPending(hash)
 		}
 	],
 	afterwares: [
-		({ data, operationName, variables, query, fromCache }) => {
+		({ data, hash, variables, query, fromCache }) => {
 			if (isServer) return
 
-			let key = tsh(str(variables) + query)
-			let expiresKey = key + dateTag
+			let expiresKey = hash + dateTag
 
-			let pending = pendings[key]
+			let pending = pendings[hash]
 			if (pending) {
-				delete pendings[key]
+				delete pendings[hash]
 				pending[1](data)
 			}
 
 			if (!data || fromCache) return
 
 			setItem(expiresKey, Date.now() + ttl * 1000 + '')
-			setItem(key, str(data))
+			setItem(prefix + hash, str(data))
 		}
 	]
 })

@@ -29,9 +29,10 @@ const runQuery = () =>
 	)
 
 const waterfall = async () => {
-	for (let i = 0; i <= 1; i++) {
+	for (let i = 0; i <= 10; i++) {
 		const t = performance.now()
 		await runQuery()
+    console.log(performance.now() - t)
 	}
 }
 
